@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プレスリリース ラクラク - AIでリリース記事を一瞬で作成</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">PR</div>
+                </div>
+                <div class="header-text">
+                    <h1>プレスリリース ラクラク</h1>
+                    <p>AIでリリース記事を一瞬で作成</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main">
+        <div class="container">
+            <!-- 入力フォーム -->
+            <div id="form-section" class="card">
+                <div class="form-header">
+                    <h2>記事情報を入力</h2>
+                    <button id="try-sample-btn" class="btn-secondary" type="button">🎯 お試しボタン</button>
+                </div>
+
+                <form id="article-form" class="article-form">
+                    <div class="form-group">
+                        <label for="title">
+                            タイトル <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="title" 
+                            name="title" 
+                            placeholder="例: 新サービス「○○」をリリース"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">
+                            目的 <span class="required">*</span>
+                        </label>
+                        <select id="purpose" name="purpose" required>
+                            <option value="company-announcement">会社の発表 - 新規事業、組織変更、経営方針などの会社発表</option>
+                            <option value="event-announcement">イベント告知 - セミナー、展示会、ウェビナーなどのイベント告知</option>
+                            <option value="tool-announcement">ツール発表 - 新サービス、アプリ、ソフトウェアのリリース</option>
+                            <option value="conversion">コンバージョン目的 - 商品・サービスの購入・登録を促進する記事</option>
+                            <option value="product-launch">製品リリース - 新製品の発売・リリース告知</option>
+                            <option value="partnership">パートナーシップ - 他社との提携・協業の発表</option>
+                            <option value="other">その他 - 上記以外の目的</option>
+                        </select>
+                        <p class="form-hint" id="purpose-hint"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company-name">
+                            会社名 <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="company-name" 
+                            name="company-name" 
+                            placeholder="例: 株式会社サンプル"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company-url">
+                            会社URL
+                        </label>
+                        <input 
+                            type="url" 
+                            id="company-url" 
+                            name="company-url" 
+                            placeholder="例: https://example.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">
+                            内容 <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            id="content" 
+                            name="content" 
+                            rows="8"
+                            placeholder="リリース記事の内容を簡潔に入力してください。詳細はAIが自動で補完します。&#10;&#10;例: 新サービス「○○」をリリースしました。ユーザーの作業効率を向上させるツールです。"
+                            required
+                        ></textarea>
+                        <p class="form-hint">
+                            <span id="content-length">0</span> 文字（簡潔な入力でOK！AIが詳細を補完します）
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="generate-btn">
+                        ✨ 記事を生成する
+                    </button>
+                </form>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>記事を生成中...</p>
+                </div>
+            </div>
+
+            <!-- 記事プレビュー -->
+            <div id="preview-section" class="card" style="display: none;">
+                <div class="preview-header">
+                    <h2>生成された記事</h2>
+                    <div class="preview-actions">
+                        <button id="regenerate-btn" class="btn-secondary">🔄 再生成</button>
+                        <button id="copy-btn" class="btn-secondary">📋 コピー</button>
+                        <button id="reset-btn" class="btn-secondary">🔄 新規作成</button>
+                    </div>
+                </div>
+
+                <div class="article-preview">
+                    <div class="article-header">
+                        <h3 id="preview-title"></h3>
+                        <p id="preview-summary" class="article-summary"></p>
+                    </div>
+                    <div id="preview-body" class="article-body"></div>
+                    <div id="preview-keywords" class="article-keywords" style="display: none;">
+                        <p class="keywords-label">キーワード:</p>
+                        <div class="keywords-list"></div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <p>💡 <strong>次のステップ:</strong> 生成された記事をコピーして、PR TIMESの投稿画面に貼り付けてください。必要に応じて、内容を調整してから投稿してください。「再生成」ボタンで、異なるニュアンスの記事を生成することもできます。</p>
+                </div>
+            </div>
+
+            <!-- 使い方ガイド -->
+            <div id="guide-section" class="card guide-card">
+                <h3>📖 使い方</h3>
+                <ol class="guide-list">
+                    <li>「お試しボタン」をクリックして、サンプルデータで動作を確認できます</li>
+                    <li>タイトル、目的、会社名、内容を入力してください（内容は簡潔でOK！）</li>
+                    <li>「記事を生成する」ボタンをクリックすると、AIが詳細なプレスリリースを作成します</li>
+                    <li>生成された記事をコピーして、PR TIMESに投稿してください</li>
+                    <li>「再生成」ボタンで、異なるニュアンスの記事を生成できます</li>
+                </ol>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="container">
+            <p>プレスリリース ラクラク - AIでリリース記事を簡単作成</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
