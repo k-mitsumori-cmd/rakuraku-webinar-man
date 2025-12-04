@@ -136,8 +136,11 @@ async function generateArticleFromForm(variation = 0) {
 
 // バックエンドAPIを使用した記事生成
 async function generateArticleWithAI(formData, variation = 0) {
-    // バックエンドサーバーのURL（環境に応じて変更可能）
-    const API_URL = 'http://localhost:3000/api/generate';
+    // バックエンドサーバーのURL
+    // 本番環境ではVercelのURL、開発環境ではlocalhost
+    const API_URL = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3000/api/generate'
+        : '/api/generate';
     
     const response = await fetch(API_URL, {
         method: 'POST',

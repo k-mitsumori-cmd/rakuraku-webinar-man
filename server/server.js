@@ -3,6 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 
+// Vercel環境では環境変数が自動的に読み込まれるため、dotenvは開発環境のみ
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
+
 // 環境変数を読み込む
 dotenv.config();
 
@@ -133,9 +138,14 @@ function extractKeywords(text) {
     return uniqueWords.slice(0, 5);
 }
 
-// サーバー起動
-app.listen(PORT, () => {
-    console.log(`🚀 サーバーが起動しました: http://localhost:${PORT}`);
-    console.log(`📝 記事生成API: http://localhost:${PORT}/api/generate`);
-});
+// サーバー起動（Vercelでは自動的に処理されるため、開発環境のみ）
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 サーバーが起動しました: http://localhost:${PORT}`);
+        console.log(`📝 記事生成API: http://localhost:${PORT}/api/generate`);
+    });
+}
+
+// Vercel用にエクスポート
+export default app;
 
