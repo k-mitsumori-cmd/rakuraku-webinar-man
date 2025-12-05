@@ -95,6 +95,33 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="registration-url">
+                            応募者URL（ウェビナー参加用） <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="url" 
+                            id="registration-url" 
+                            name="registration-url" 
+                            placeholder="例: https://example.com/webinar/register"
+                            required
+                        >
+                        <p class="form-hint">このURLをクリックしたらウェビナーに参加申し込みができるURL</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registration-form-url">
+                            申込フォームURL
+                        </label>
+                        <input 
+                            type="url" 
+                            id="registration-form-url" 
+                            name="registration-form-url" 
+                            placeholder="例: https://example.com/webinar/form"
+                        >
+                        <p class="form-hint">参加申し込み用のフォームURL（任意）</p>
+                    </div>
+
+                    <div class="form-group">
                         <label for="target-audience">
                             対象者
                         </label>
@@ -212,7 +239,7 @@
                         <button class="tab-btn" data-tab="sns">SNS投稿文</button>
                         <button class="tab-btn" data-tab="email">メール文面</button>
                         <button class="tab-btn" data-tab="thankyou">お礼メール</button>
-                        <button class="tab-btn" data-tab="survey">アンケート項目</button>
+                        <button class="tab-btn" data-tab="internal">社内告知文</button>
                     </div>
 
                     <div id="tab-announcement" class="tab-content active">
@@ -263,12 +290,12 @@
                         <div id="preview-thankyou" class="article-body"></div>
                     </div>
 
-                    <div id="tab-survey" class="tab-content">
+                    <div id="tab-internal" class="tab-content">
                         <div class="tab-header">
-                            <h3>アンケート項目</h3>
-                            <button class="copy-btn" data-copy="survey">📋 コピー</button>
+                            <h3>完成後の社内告知文</h3>
+                            <button class="copy-btn" data-copy="internal">📋 コピー</button>
                         </div>
-                        <div id="preview-survey" class="article-body"></div>
+                        <div id="preview-internal" class="article-body"></div>
                     </div>
                 </div>
 

@@ -22,7 +22,9 @@ export default async function handler(req, res) {
             eventDate, 
             eventFormat, 
             organizerName, 
-            organizerUrl, 
+            organizerUrl,
+            registrationUrl,
+            registrationFormUrl,
             targetAudience, 
             fee, 
             content, 
@@ -31,9 +33,9 @@ export default async function handler(req, res) {
         } = req.body;
 
         // バリデーション
-        if (!title || !eventDate || !organizerName || !content) {
+        if (!title || !eventDate || !organizerName || !content || !registrationUrl) {
             return res.status(400).json({ 
-                error: 'タイトル、開催日時、主催者名、内容は必須です' 
+                error: 'タイトル、開催日時、主催者名、内容、応募者URLは必須です' 
             });
         }
 
@@ -109,6 +111,10 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
+
+【応募者URL】
+${registrationUrl}
+${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
 ${speakersText}
 【内容】
 ${content}
@@ -118,7 +124,11 @@ ${content}
 - 以下のセクションを含める：
   ■ 開催概要
   ■ 内容
-  ■ 参加方法
+  ■ 登壇者情報（登壇者がいる場合）
+  ■ 参加方法（応募者URLを明確に記載し、応募を促す）
+- ウェビナーの集客を促進するような魅力的な表現を使用
+- 参加者のメリットや価値を明確に伝える
+- 応募を促すCTA（Call to Action）を含める
 - 各セクションを充実させ、具体的で魅力的な内容にする
 - PR TIMESのフォーマットに最適化する
 - 文字数は800-1200文字程度
@@ -147,6 +157,10 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
+
+【応募者URL】
+${registrationUrl}
+${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
 ${speakersText}
 【内容】
 ${content}
@@ -159,6 +173,7 @@ ${content}
   ■ 主催者
   ■ 対象者
   ■ 参加費
+  ■ 応募者URL
   ■ 目的
   ■ 期待される成果
 - 各セクションを充実させ、具体的な内容にする
@@ -208,14 +223,21 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
+
+【応募者URL】
+${registrationUrl}
+${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
 ${speakersText}
 【内容】
 ${content}
 
 【要件】
 - Twitter形式で魅力的に投稿文を作成
+- 応募を促すCTAを含める
+- 応募者URLを記載する
 - ハッシュタグを含める
 - 絵文字を適切に使用
+- ウェビナーの魅力を伝える表現を使用
 - 文字数は280文字以内（2ツイートに分けても可）
 
 SNS投稿文を作成してください：`;
@@ -242,6 +264,10 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
+
+【応募者URL】
+${registrationUrl}
+${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
 ${speakersText}
 【内容】
 ${content}
@@ -255,7 +281,8 @@ ${content}
   - 対象者
   - 参加費
   - 内容
-  - 参加方法（URL）
+  - 参加方法（応募者URLを記載）
+- 応募を促す表現を含める
 - 文字数は400-600文字程度
 
 参加者向け案内メールを作成してください：`;
@@ -279,35 +306,52 @@ ${speakersText}
 - 「ご視聴ありがとうございました」という感謝の言葉から始める
 - ウェビナーの内容に言及
 - 登壇者への感謝も含める（登壇者がいる場合）
+- **重要**: 次回のウェビナーをより良くするために、アンケートへの回答をお願いする形で誘導してください
+- アンケートへの協力を丁寧にお願いする内容を含める
 - 今後の連絡や次回開催の案内を含める
 - 丁寧で温かいトーン
-- 文字数は400-600文字程度
+- 文字数は500-700文字程度
 
 参加者向けお礼メールを作成してください：`;
 
-        // プロンプトを作成（アンケート項目）
-        const surveyPrompt = `あなたはウェビナー後のアンケート項目を作成する専門家です。
-以下の情報を元に、効果的なアンケート項目を作成してください。
+        // プロンプトを作成（社内告知文）
+        const internalPrompt = `あなたはウェビナー完成後の社内告知文を作成する専門家です。
+以下の情報を元に、社内向けの告知文を作成してください。
 
 【ウェビナータイトル】
 ${title}
 
+【開催日時】
+${dateStr} ${timeStr}
+
+【開催形式】
+${formatLabel}
+
+【主催者】
+${organizerName}
+${organizerUrl ? `URL: ${organizerUrl}` : ''}
+${speakersText}
+【対象者】
+${targetAudience || '一般参加者'}
+
+【参加費】
+${fee || '無料'}
+
 【ウェビナーの内容】
 ${content}
-${speakersText}
-【要件】
-- 以下のカテゴリを含める：
-  ■ 満足度に関する質問
-  ■ 内容に関する質問
-  ■ 登壇者に関する質問（登壇者がいる場合）
-  ■ 次回参加意向
-  ■ 自由記述欄
-- 各カテゴリに3-5個の質問項目を含める
-- 選択式と記述式のバランスを考慮
-- 回答しやすい形式にする
-- 文字数は500-800文字程度
 
-アンケート項目を作成してください：`;
+【応募者URL】
+${registrationUrl}
+
+【要件】
+- 社内メンバーに向けた告知文として作成
+- ウェビナーの概要を簡潔に説明
+- 参加を促す内容にする
+- 応募者URLを明確に記載
+- ウェビナーの価値やメリットを伝える
+- 文字数は400-600文字程度
+
+社内向け告知文を作成してください：`;
 
         // すべてのコンテンツを並列生成
         const [announcementRes, planRes, checklistRes, snsRes, emailRes, thankyouRes, surveyRes] = await Promise.all([
@@ -406,11 +450,11 @@ ${speakersText}
                 messages: [
                     {
                         role: 'system',
-                        content: 'あなたはウェビナー後のアンケート項目を作成する専門家です。提供された情報から、効果的なアンケート項目を作成してください。'
+                        content: 'あなたはウェビナー完成後の社内告知文を作成する専門家です。提供された情報から、社内向けの効果的な告知文を作成してください。'
                     },
                     {
                         role: 'user',
-                        content: surveyPrompt
+                        content: internalPrompt
                     }
                 ],
                 temperature: 0.7 + (variation * 0.1),
@@ -424,7 +468,7 @@ ${speakersText}
         const sns = snsRes.choices[0].message.content;
         const email = emailRes.choices[0].message.content;
         const thankyou = thankyouRes.choices[0].message.content;
-        const survey = surveyRes.choices[0].message.content;
+        const internal = surveyRes.choices[0].message.content;
 
         res.json({
             announcement,
@@ -433,7 +477,7 @@ ${speakersText}
             sns,
             email,
             thankyou,
-            survey
+            internal
         });
 
     } catch (error) {

@@ -6,6 +6,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'online',
         organizerName: '株式会社マーケティングテック',
         organizerUrl: 'https://marketing-tech.co.jp',
+        registrationUrl: 'https://marketing-tech.co.jp/webinar/register',
+        registrationFormUrl: '',
         targetAudience: 'マーケティング担当者、経営者、起業家',
         fee: '無料',
         content: `AIを活用したマーケティング戦略について解説するウェビナーを開催します。最新のデジタルマーケティング手法と実践的なノウハウをお伝えします。`
@@ -16,6 +18,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'online',
         organizerName: 'スタートアップ支援機構',
         organizerUrl: 'https://startup-support.org',
+        registrationUrl: 'https://startup-support.org/webinar/register',
+        registrationFormUrl: '',
         targetAudience: '起業家、スタートアップ経営者',
         fee: '5,000円（早期割引あり）',
         content: `スタートアップ企業向けに資金調達戦略を解説するウェビナーを開催します。ベンチャーキャピタルの専門家が実践的なアドバイスを提供します。`
@@ -26,6 +30,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'hybrid',
         organizerName: '株式会社DXコンサルティング',
         organizerUrl: 'https://dx-consulting.jp',
+        registrationUrl: 'https://dx-consulting.jp/webinar/register',
+        registrationFormUrl: '',
         targetAudience: '経営者、DX推進担当者、IT部門',
         fee: '10,000円',
         content: `企業のデジタルトランスフォーメーションを実践的に進めるためのノウハウを解説します。成功事例と失敗例から学ぶ実践的な内容です。`
@@ -49,6 +55,8 @@ const eventDateInput = document.getElementById('event-date');
 const eventFormatSelect = document.getElementById('event-format');
 const organizerNameInput = document.getElementById('organizer-name');
 const organizerUrlInput = document.getElementById('organizer-url');
+const registrationUrlInput = document.getElementById('registration-url');
+const registrationFormUrlInput = document.getElementById('registration-form-url');
 const targetAudienceInput = document.getElementById('target-audience');
 const feeInput = document.getElementById('fee');
 const contentTextarea = document.getElementById('content');
@@ -66,7 +74,7 @@ const previewChecklist = document.getElementById('preview-checklist');
 const previewSns = document.getElementById('preview-sns');
 const previewEmail = document.getElementById('preview-email');
 const previewThankyou = document.getElementById('preview-thankyou');
-const previewSurvey = document.getElementById('preview-survey');
+const previewInternal = document.getElementById('preview-internal');
 
 // 登壇者情報管理
 const speakersContainer = document.getElementById('speakers-container');
@@ -203,6 +211,8 @@ trySampleBtn.addEventListener('click', () => {
     eventFormatSelect.value = sampleData.eventFormat;
     organizerNameInput.value = sampleData.organizerName;
     organizerUrlInput.value = sampleData.organizerUrl || '';
+    registrationUrlInput.value = sampleData.registrationUrl || 'https://example.com/webinar/register';
+    registrationFormUrlInput.value = sampleData.registrationFormUrl || '';
     targetAudienceInput.value = sampleData.targetAudience || '';
     feeInput.value = sampleData.fee || '';
     contentTextarea.value = sampleData.content;
@@ -284,14 +294,16 @@ async function generateWebinarTasks(variation = 0, isRegenerating = false) {
         eventFormat: eventFormatSelect.value,
         organizerName: organizerNameInput.value.trim(),
         organizerUrl: organizerUrlInput.value.trim(),
+        registrationUrl: registrationUrlInput.value.trim(),
+        registrationFormUrl: registrationFormUrlInput.value.trim(),
         targetAudience: targetAudienceInput.value.trim(),
         fee: feeInput.value.trim(),
         content: contentTextarea.value.trim(),
         speakers: getSpeakersData()
     };
     
-    if (!formData.title || !formData.content || !formData.organizerName || !formData.eventDate) {
-        alert('タイトル、開催日時、主催者名、内容を入力してください。');
+    if (!formData.title || !formData.content || !formData.organizerName || !formData.eventDate || !formData.registrationUrl) {
+        alert('タイトル、開催日時、主催者名、内容、応募者URLを入力してください。');
         return null;
     }
     
@@ -433,7 +445,8 @@ ${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
 【内容】
 ${formData.content}
 
-詳細はこちら：${formData.organizerUrl || 'https://example.com'}`,
+詳細・参加申し込みはこちら：${formData.registrationUrl}
+${formData.registrationFormUrl ? `\n申込フォーム：${formData.registrationFormUrl}` : ''}`,
 
         plan: `【企画書】
 
@@ -506,7 +519,7 @@ ${formData.fee ? `💰 ${formData.fee}` : '💰 無料'}
 ${formData.content.substring(0, 100)}...
 
 参加申し込みはこちら 👇
-${formData.organizerUrl || 'https://example.com'}
+${formData.registrationUrl}
 
 #ウェビナー #セミナー`,
 
@@ -530,7 +543,8 @@ ${formData.content}
 
 【参加方法】
 以下のURLからお申し込みください：
-${formData.organizerUrl || 'https://example.com'}
+${formData.registrationUrl}
+${formData.registrationFormUrl ? `\n\n申込フォーム：\n${formData.registrationFormUrl}` : ''}
 
 皆様のご参加をお待ちしております。
 
@@ -546,7 +560,7 @@ function displayTasks(tasks) {
     previewSns.textContent = tasks.sns || '';
     previewEmail.textContent = tasks.email || '';
     previewThankyou.textContent = tasks.thankyou || '';
-    previewSurvey.textContent = tasks.survey || '';
+    previewInternal.textContent = tasks.internal || '';
     
     formSection.style.display = 'none';
     guideSection.style.display = 'none';
