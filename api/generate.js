@@ -25,6 +25,7 @@ export default async function handler(req, res) {
             organizerUrl,
             registrationUrl,
             registrationFormUrl,
+            surveyFormUrl,
             targetAudience, 
             fee, 
             content, 
@@ -235,6 +236,7 @@ ${content}
 - Twitter形式で魅力的に投稿文を作成
 - 応募を促すCTAを含める
 - 応募者URLを記載する
+- ${speakers && speakers.length > 0 ? '登壇者情報を含める' : ''}
 - ハッシュタグを含める
 - 絵文字を適切に使用
 - ウェビナーの魅力を伝える表現を使用
@@ -242,9 +244,9 @@ ${content}
 
 SNS投稿文を作成してください：`;
 
-        // プロンプトを作成（メール文面）
-        const emailPrompt = `あなたは参加者向け案内メールを作成する専門家です。
-以下の情報を元に、丁寧で分かりやすい案内メールを作成してください。
+        // プロンプトを作成（集客向けメール）
+        const marketingPrompt = `あなたは集客向けメール（申し込み方法案内メール）を作成する専門家です。
+以下の情報を元に、ウェビナーへの参加を促す案内メールを作成してください。
 
 【ウェビナータイトル】
 ${title}
@@ -258,7 +260,7 @@ ${formatLabel}
 【主催者】
 ${organizerName}
 ${organizerUrl ? `URL: ${organizerUrl}` : ''}
-
+${speakersText}
 【対象者】
 ${targetAudience || '一般参加者'}
 
@@ -268,26 +270,131 @@ ${fee || '無料'}
 【応募者URL】
 ${registrationUrl}
 ${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
-${speakersText}
 【内容】
 ${content}
 
 【要件】
 - 件名を含める
-- 丁寧で分かりやすい文章
+- ウェビナーの魅力を伝える
+- 参加のメリットを明確に示す
 - 以下の情報を含める：
   - 開催日時
   - 開催形式
   - 対象者
   - 参加費
   - 内容
-  - 参加方法（応募者URLを記載）
-- 応募を促す表現を含める
+  - 登壇者情報（登壇者がいる場合）
+  - 参加方法（応募者URLを明確に記載）
+- 応募を強く促すCTAを含める
 - 文字数は400-600文字程度
 
-参加者向け案内メールを作成してください：`;
+集客向けメール（申し込み方法案内）を作成してください：`;
 
-        // プロンプトを作成（お礼メール）
+        // プロンプトを作成（申し込みありがとうメール）
+        const thanksPrompt = `あなたは申し込みありがとうメールを作成する専門家です。
+以下の情報を元に、申し込みフォーム入力後の返信メールを作成してください。
+
+【ウェビナータイトル】
+${title}
+
+【開催日時】
+${dateStr} ${timeStr}
+
+【開催形式】
+${formatLabel}
+
+【主催者】
+${organizerName}
+${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
+【要件】
+- 件名を含める（「【${title}】お申し込みありがとうございます」など）
+- 「お申し込みありがとうございます」から始める
+- 申し込みが完了したことを確認
+- 開催日時・形式を再確認
+- **重要**: 申し込みフォームURLを記載（登録内容の確認用など）
+- 開催前の案内やリマインドについても触れる
+- 丁寧で温かいトーン
+- 文字数は300-500文字程度
+
+申し込みありがとうメールを作成してください：`;
+
+        // プロンプトを作成（リマインドメール）
+        const reminderPrompt = `あなたはリマインドメールを作成する専門家です。
+以下の情報を元に、応募してきた人へのリマインドメールを作成してください。
+
+【ウェビナータイトル】
+${title}
+
+【開催日時】
+${dateStr} ${timeStr}
+
+【開催形式】
+${formatLabel}
+
+【主催者】
+${organizerName}
+${organizerUrl ? `URL: ${organizerUrl}` : ''}
+${speakersText}
+【応募者URL】
+${registrationUrl}
+【内容】
+${content}
+
+【要件】
+- 件名を含める（「【${title}】開催間近のお知らせ」など）
+- 開催が間近であることを伝える
+- 参加を楽しみにしていることを伝える
+- 開催日時・形式を再確認
+- 参加方法やアクセス情報を記載
+- 登壇者情報を含める（登壇者がいる場合）
+- 当日の流れや持ち物があれば記載
+- 丁寧で温かいトーン
+- 文字数は400-600文字程度
+
+リマインドメールを作成してください：`;
+
+        // プロンプトを作成（ウェビナー社内告知文）
+        const internalPrompt = `あなたはウェビナー社内告知文を作成する専門家です。
+以下の情報を元に、「ご視聴ありがとうございました」から始まる社内向けの告知文を作成してください。
+
+【ウェビナータイトル】
+${title}
+
+【開催日時】
+${dateStr} ${timeStr}
+
+【開催形式】
+${formatLabel}
+
+【主催者】
+${organizerName}
+${organizerUrl ? `URL: ${organizerUrl}` : ''}
+${speakersText}
+【対象者】
+${targetAudience || '一般参加者'}
+
+【参加費】
+${fee || '無料'}
+
+【応募者URL】
+${registrationUrl}
+
+【ウェビナーの内容】
+${content}
+
+【要件】
+- 「ご視聴ありがとうございました」から始める
+- ウェビナーの概要を簡潔に説明
+- 参加者への感謝を伝える
+- 登壇者情報を含める（登壇者がいる場合）
+- 社内メンバーに向けた告知文として作成
+- 応募者URLを記載
+- ウェビナーの価値や成果を伝える
+- 文字数は400-600文字程度
+
+ウェビナー社内告知文を作成してください：`;
+
+        // プロンプトを作成（参加者向けお礼メール）
         const thankyouPrompt = `あなたは参加者向けお礼メールを作成する専門家です。
 以下の情報を元に、丁寧で心のこもったお礼メールを作成してください。
 
@@ -301,60 +408,23 @@ ${dateStr} ${timeStr}
 ${organizerName}
 ${organizerUrl ? `URL: ${organizerUrl}` : ''}
 ${speakersText}
+${surveyFormUrl ? `\n【アンケートフォーム入力URL】\n${surveyFormUrl}` : ''}
 【要件】
 - 件名を含める
 - 「ご視聴ありがとうございました」という感謝の言葉から始める
 - ウェビナーの内容に言及
 - 登壇者への感謝も含める（登壇者がいる場合）
 - **重要**: 次回のウェビナーをより良くするために、アンケートへの回答をお願いする形で誘導してください
-- アンケートへの協力を丁寧にお願いする内容を含める
+- ${surveyFormUrl ? `アンケートフォーム入力URL（${surveyFormUrl}）を記載し、` : ''}アンケートへの協力を丁寧にお願いする内容を含める
 - 今後の連絡や次回開催の案内を含める
 - 丁寧で温かいトーン
 - 文字数は500-700文字程度
 
 参加者向けお礼メールを作成してください：`;
 
-        // プロンプトを作成（社内告知文）
-        const internalPrompt = `あなたはウェビナー完成後の社内告知文を作成する専門家です。
-以下の情報を元に、社内向けの告知文を作成してください。
-
-【ウェビナータイトル】
-${title}
-
-【開催日時】
-${dateStr} ${timeStr}
-
-【開催形式】
-${formatLabel}
-
-【主催者】
-${organizerName}
-${organizerUrl ? `URL: ${organizerUrl}` : ''}
-${speakersText}
-【対象者】
-${targetAudience || '一般参加者'}
-
-【参加費】
-${fee || '無料'}
-
-【ウェビナーの内容】
-${content}
-
-【応募者URL】
-${registrationUrl}
-
-【要件】
-- 社内メンバーに向けた告知文として作成
-- ウェビナーの概要を簡潔に説明
-- 参加を促す内容にする
-- 応募者URLを明確に記載
-- ウェビナーの価値やメリットを伝える
-- 文字数は400-600文字程度
-
-社内向け告知文を作成してください：`;
 
         // すべてのコンテンツを並列生成
-        const [announcementRes, planRes, checklistRes, snsRes, emailRes, thankyouRes, surveyRes] = await Promise.all([
+        const [announcementRes, planRes, checklistRes, snsRes, internalRes, marketingRes, thanksRes, reminderRes, thankyouRes] = await Promise.all([
             openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -420,11 +490,56 @@ ${registrationUrl}
                 messages: [
                     {
                         role: 'system',
-                        content: 'あなたは参加者向け案内メールを作成する専門家です。提供された情報から、丁寧で分かりやすい案内メールを作成してください。'
+                        content: 'あなたはウェビナー社内告知文を作成する専門家です。提供された情報から、「ご視聴ありがとうございました」から始まる社内向けの告知文を作成してください。'
                     },
                     {
                         role: 'user',
-                        content: emailPrompt
+                        content: internalPrompt
+                    }
+                ],
+                temperature: 0.7 + (variation * 0.1),
+                max_tokens: 1000
+            }),
+            openai.chat.completions.create({
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'あなたは集客向けメール（申し込み方法案内メール）を作成する専門家です。提供された情報から、ウェビナーへの参加を促す案内メールを作成してください。'
+                    },
+                    {
+                        role: 'user',
+                        content: marketingPrompt
+                    }
+                ],
+                temperature: 0.7 + (variation * 0.1),
+                max_tokens: 800
+            }),
+            openai.chat.completions.create({
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'あなたは申し込みありがとうメールを作成する専門家です。提供された情報から、申し込みフォーム入力後の返信メールを作成してください。'
+                    },
+                    {
+                        role: 'user',
+                        content: thanksPrompt
+                    }
+                ],
+                temperature: 0.7 + (variation * 0.1),
+                max_tokens: 800
+            }),
+            openai.chat.completions.create({
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'あなたはリマインドメールを作成する専門家です。提供された情報から、応募してきた人へのリマインドメールを作成してください。'
+                    },
+                    {
+                        role: 'user',
+                        content: reminderPrompt
                     }
                 ],
                 temperature: 0.7 + (variation * 0.1),
@@ -444,21 +559,6 @@ ${registrationUrl}
                 ],
                 temperature: 0.7 + (variation * 0.1),
                 max_tokens: 800
-            }),
-            openai.chat.completions.create({
-                model: 'gpt-4',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'あなたはウェビナー完成後の社内告知文を作成する専門家です。提供された情報から、社内向けの効果的な告知文を作成してください。'
-                    },
-                    {
-                        role: 'user',
-                        content: internalPrompt
-                    }
-                ],
-                temperature: 0.7 + (variation * 0.1),
-                max_tokens: 1000
             })
         ]);
 
@@ -466,18 +566,22 @@ ${registrationUrl}
         const plan = planRes.choices[0].message.content;
         const checklist = checklistRes.choices[0].message.content;
         const sns = snsRes.choices[0].message.content;
-        const email = emailRes.choices[0].message.content;
+        const internal = internalRes.choices[0].message.content;
+        const marketing = marketingRes.choices[0].message.content;
+        const thanks = thanksRes.choices[0].message.content;
+        const reminder = reminderRes.choices[0].message.content;
         const thankyou = thankyouRes.choices[0].message.content;
-        const internal = surveyRes.choices[0].message.content;
 
         res.json({
             announcement,
             plan,
             checklist,
             sns,
-            email,
-            thankyou,
-            internal
+            internal,
+            marketing,
+            thanks,
+            reminder,
+            thankyou
         });
 
     } catch (error) {

@@ -7,7 +7,8 @@ const SAMPLE_DATA_ARRAY = [
         organizerName: '株式会社マーケティングテック',
         organizerUrl: 'https://marketing-tech.co.jp',
         registrationUrl: 'https://marketing-tech.co.jp/webinar/register',
-        registrationFormUrl: '',
+        registrationFormUrl: 'https://marketing-tech.co.jp/webinar/form',
+        surveyFormUrl: 'https://marketing-tech.co.jp/webinar/survey',
         targetAudience: 'マーケティング担当者、経営者、起業家',
         fee: '無料',
         content: `AIを活用したマーケティング戦略について解説するウェビナーを開催します。最新のデジタルマーケティング手法と実践的なノウハウをお伝えします。`
@@ -19,7 +20,8 @@ const SAMPLE_DATA_ARRAY = [
         organizerName: 'スタートアップ支援機構',
         organizerUrl: 'https://startup-support.org',
         registrationUrl: 'https://startup-support.org/webinar/register',
-        registrationFormUrl: '',
+        registrationFormUrl: 'https://startup-support.org/webinar/form',
+        surveyFormUrl: 'https://startup-support.org/webinar/survey',
         targetAudience: '起業家、スタートアップ経営者',
         fee: '5,000円（早期割引あり）',
         content: `スタートアップ企業向けに資金調達戦略を解説するウェビナーを開催します。ベンチャーキャピタルの専門家が実践的なアドバイスを提供します。`
@@ -31,7 +33,8 @@ const SAMPLE_DATA_ARRAY = [
         organizerName: '株式会社DXコンサルティング',
         organizerUrl: 'https://dx-consulting.jp',
         registrationUrl: 'https://dx-consulting.jp/webinar/register',
-        registrationFormUrl: '',
+        registrationFormUrl: 'https://dx-consulting.jp/webinar/form',
+        surveyFormUrl: 'https://dx-consulting.jp/webinar/survey',
         targetAudience: '経営者、DX推進担当者、IT部門',
         fee: '10,000円',
         content: `企業のデジタルトランスフォーメーションを実践的に進めるためのノウハウを解説します。成功事例と失敗例から学ぶ実践的な内容です。`
@@ -57,6 +60,7 @@ const organizerNameInput = document.getElementById('organizer-name');
 const organizerUrlInput = document.getElementById('organizer-url');
 const registrationUrlInput = document.getElementById('registration-url');
 const registrationFormUrlInput = document.getElementById('registration-form-url');
+const surveyFormUrlInput = document.getElementById('survey-form-url');
 const targetAudienceInput = document.getElementById('target-audience');
 const feeInput = document.getElementById('fee');
 const contentTextarea = document.getElementById('content');
@@ -72,9 +76,11 @@ const previewAnnouncement = document.getElementById('preview-announcement');
 const previewPlan = document.getElementById('preview-plan');
 const previewChecklist = document.getElementById('preview-checklist');
 const previewSns = document.getElementById('preview-sns');
-const previewEmail = document.getElementById('preview-email');
-const previewThankyou = document.getElementById('preview-thankyou');
 const previewInternal = document.getElementById('preview-internal');
+const previewMarketing = document.getElementById('preview-marketing');
+const previewThanks = document.getElementById('preview-thanks');
+const previewReminder = document.getElementById('preview-reminder');
+const previewThankyou = document.getElementById('preview-thankyou');
 
 // 登壇者情報管理
 const speakersContainer = document.getElementById('speakers-container');
@@ -213,6 +219,7 @@ trySampleBtn.addEventListener('click', () => {
     organizerUrlInput.value = sampleData.organizerUrl || '';
     registrationUrlInput.value = sampleData.registrationUrl || 'https://example.com/webinar/register';
     registrationFormUrlInput.value = sampleData.registrationFormUrl || '';
+    surveyFormUrlInput.value = sampleData.surveyFormUrl || '';
     targetAudienceInput.value = sampleData.targetAudience || '';
     feeInput.value = sampleData.fee || '';
     contentTextarea.value = sampleData.content;
@@ -296,6 +303,7 @@ async function generateWebinarTasks(variation = 0, isRegenerating = false) {
         organizerUrl: organizerUrlInput.value.trim(),
         registrationUrl: registrationUrlInput.value.trim(),
         registrationFormUrl: registrationFormUrlInput.value.trim(),
+        surveyFormUrl: surveyFormUrlInput.value.trim(),
         targetAudience: targetAudienceInput.value.trim(),
         fee: feeInput.value.trim(),
         content: contentTextarea.value.trim(),
@@ -558,9 +566,11 @@ function displayTasks(tasks) {
     previewPlan.textContent = tasks.plan || '';
     previewChecklist.textContent = tasks.checklist || '';
     previewSns.textContent = tasks.sns || '';
-    previewEmail.textContent = tasks.email || '';
-    previewThankyou.textContent = tasks.thankyou || '';
     previewInternal.textContent = tasks.internal || '';
+    previewMarketing.textContent = tasks.marketing || '';
+    previewThanks.textContent = tasks.thanks || '';
+    previewReminder.textContent = tasks.reminder || '';
+    previewThankyou.textContent = tasks.thankyou || '';
     
     formSection.style.display = 'none';
     guideSection.style.display = 'none';
