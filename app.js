@@ -6,8 +6,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'online',
         organizerName: '株式会社マーケティングテック',
         organizerUrl: 'https://marketing-tech.co.jp',
-        registrationUrl: 'https://marketing-tech.co.jp/webinar/register',
         registrationFormUrl: 'https://marketing-tech.co.jp/webinar/form',
+        registrationUrl: 'https://zoom.us/j/123456789',
         surveyFormUrl: 'https://marketing-tech.co.jp/webinar/survey',
         targetAudience: 'マーケティング担当者、経営者、起業家',
         fee: '無料',
@@ -19,8 +19,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'online',
         organizerName: 'スタートアップ支援機構',
         organizerUrl: 'https://startup-support.org',
-        registrationUrl: 'https://startup-support.org/webinar/register',
         registrationFormUrl: 'https://startup-support.org/webinar/form',
+        registrationUrl: 'https://zoom.us/j/987654321',
         surveyFormUrl: 'https://startup-support.org/webinar/survey',
         targetAudience: '起業家、スタートアップ経営者',
         fee: '5,000円（早期割引あり）',
@@ -32,8 +32,8 @@ const SAMPLE_DATA_ARRAY = [
         eventFormat: 'hybrid',
         organizerName: '株式会社DXコンサルティング',
         organizerUrl: 'https://dx-consulting.jp',
-        registrationUrl: 'https://dx-consulting.jp/webinar/register',
         registrationFormUrl: 'https://dx-consulting.jp/webinar/form',
+        registrationUrl: 'https://zoom.us/j/555555555',
         surveyFormUrl: 'https://dx-consulting.jp/webinar/survey',
         targetAudience: '経営者、DX推進担当者、IT部門',
         fee: '10,000円',
@@ -72,7 +72,6 @@ const regenerateBtn = document.getElementById('regenerate-btn');
 const resetBtn = document.getElementById('reset-btn');
 
 // プレビュー要素
-const previewAnnouncement = document.getElementById('preview-announcement');
 const previewPlan = document.getElementById('preview-plan');
 const previewChecklist = document.getElementById('preview-checklist');
 const previewSns = document.getElementById('preview-sns');
@@ -217,8 +216,8 @@ trySampleBtn.addEventListener('click', () => {
     eventFormatSelect.value = sampleData.eventFormat;
     organizerNameInput.value = sampleData.organizerName;
     organizerUrlInput.value = sampleData.organizerUrl || '';
-    registrationUrlInput.value = sampleData.registrationUrl || 'https://example.com/webinar/register';
-    registrationFormUrlInput.value = sampleData.registrationFormUrl || '';
+    registrationFormUrlInput.value = sampleData.registrationFormUrl || 'https://example.com/webinar/form';
+    registrationUrlInput.value = sampleData.registrationUrl || 'https://zoom.us/j/123456789';
     surveyFormUrlInput.value = sampleData.surveyFormUrl || '';
     targetAudienceInput.value = sampleData.targetAudience || '';
     feeInput.value = sampleData.fee || '';
@@ -310,8 +309,8 @@ async function generateWebinarTasks(variation = 0, isRegenerating = false) {
         speakers: getSpeakersData()
     };
     
-    if (!formData.title || !formData.content || !formData.organizerName || !formData.eventDate || !formData.registrationUrl) {
-        alert('タイトル、開催日時、主催者名、内容、応募者URLを入力してください。');
+    if (!formData.title || !formData.content || !formData.organizerName || !formData.eventDate || !formData.registrationUrl || !formData.registrationFormUrl) {
+        alert('タイトル、開催日時、主催者名、内容、セミナーに申し込むフォームのURL、ウェビナー参加Zoom URLを入力してください。');
         return null;
     }
     
@@ -435,27 +434,6 @@ function generateTasksTemplate(formData, variation = 0) {
     });
     
     return {
-        announcement: `【ウェビナー告知】
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${formData.title}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${formData.organizerName}${formData.organizerUrl ? `（${formData.organizerUrl}）` : ''}は、${formData.content}
-
-【開催概要】
-■ タイトル：${formData.title}
-■ 開催日時：${dateStr} ${timeStr}
-■ 開催形式：${formatLabel}
-${formData.targetAudience ? `■ 対象者：${formData.targetAudience}` : ''}
-${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
-
-【内容】
-${formData.content}
-
-詳細・参加申し込みはこちら：${formData.registrationUrl}
-${formData.registrationFormUrl ? `\n申込フォーム：${formData.registrationFormUrl}` : ''}`,
-
         plan: `【企画書】
 
 ■ イベント名
@@ -527,11 +505,29 @@ ${formData.fee ? `💰 ${formData.fee}` : '💰 無料'}
 ${formData.content.substring(0, 100)}...
 
 参加申し込みはこちら 👇
-${formData.registrationUrl}
+${formData.registrationFormUrl || formData.registrationUrl}
 
 #ウェビナー #セミナー`,
 
-        email: `件名：【${formData.title}】ウェビナー開催のご案内
+        internal: `【ウェビナー社内告知文】
+
+ご視聴ありがとうございました。
+
+${formData.organizerName}${formData.organizerUrl ? `（${formData.organizerUrl}）` : ''}が開催したウェビナー「${formData.title}」が無事終了いたしました。
+
+【開催概要】
+■ タイトル：${formData.title}
+■ 開催日時：${dateStr} ${timeStr}
+■ 開催形式：${formatLabel}
+${formData.targetAudience ? `■ 対象者：${formData.targetAudience}` : ''}
+${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
+
+【内容】
+${formData.content}
+
+次回開催のご案内は、${formData.registrationFormUrl ? `以下のフォームからお申し込みください：\n${formData.registrationFormUrl}` : 'こちらから'}でお知らせいたします。`,
+
+        marketing: `件名：【${formData.title}】ウェビナー開催のご案内
 
 ${formData.organizerName}でございます。
 
@@ -550,11 +546,59 @@ ${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
 ${formData.content}
 
 【参加方法】
-以下のURLからお申し込みください：
-${formData.registrationUrl}
-${formData.registrationFormUrl ? `\n\n申込フォーム：\n${formData.registrationFormUrl}` : ''}
+以下のフォームからお申し込みください：
+${formData.registrationFormUrl}
 
 皆様のご参加をお待ちしております。
+
+${formData.organizerName}`,
+
+        thanks: `件名：【${formData.title}】お申し込みありがとうございます
+
+${formData.organizerName}でございます。
+
+この度は、ウェビナー「${formData.title}」にお申し込みいただき、誠にありがとうございます。
+
+【開催情報】
+■ 開催日時：${dateStr} ${timeStr}
+■ 開催形式：${formatLabel}
+
+【ウェビナー参加Zoom URL】
+${formData.registrationUrl}
+
+上記URLからウェビナーにご参加いただけます。
+当日は開始時刻の5分前までにアクセスしてください。
+
+${formData.organizerName}`,
+
+        reminder: `件名：【${formData.title}】開催間近のお知らせ
+
+${formData.organizerName}でございます。
+
+ウェビナー「${formData.title}」の開催まで間もなくとなりました。
+
+【開催情報】
+■ 開催日時：${dateStr} ${timeStr}
+■ 開催形式：${formatLabel}
+
+【ウェビナー参加Zoom URL】
+${formData.registrationUrl}
+
+当日は開始時刻の5分前までに上記URLからアクセスしてください。
+皆様にお会いできることを楽しみにしております。
+
+${formData.organizerName}`,
+
+        thankyou: `件名：【${formData.title}】ご視聴ありがとうございました
+
+${formData.organizerName}でございます。
+
+本日は、ウェビナー「${formData.title}」にご参加いただき、誠にありがとうございました。
+
+おかげさまで、無事にウェビナーを終了することができました。
+${formData.surveyFormUrl ? `\n次回のウェビナーをより良くするために、アンケートへのご協力をお願いいたします。\n\n【アンケートURL】\n${formData.surveyFormUrl}\n` : ''}
+
+今後ともよろしくお願いいたします。
 
 ${formData.organizerName}`
     };
@@ -562,7 +606,6 @@ ${formData.organizerName}`
 
 // タスクを表示
 function displayTasks(tasks) {
-    previewAnnouncement.textContent = tasks.announcement || '';
     previewPlan.textContent = tasks.plan || '';
     previewChecklist.textContent = tasks.checklist || '';
     previewSns.textContent = tasks.sns || '';

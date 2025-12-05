@@ -34,9 +34,9 @@ export default async function handler(req, res) {
         } = req.body;
 
         // バリデーション
-        if (!title || !eventDate || !organizerName || !content || !registrationUrl) {
+        if (!title || !eventDate || !organizerName || !content || !registrationUrl || !registrationFormUrl) {
             return res.status(400).json({ 
-                error: 'タイトル、開催日時、主催者名、内容、応募者URLは必須です' 
+                error: 'タイトル、開催日時、主催者名、内容、セミナーに申し込むフォームのURL、ウェビナー参加Zoom URLは必須です' 
             });
         }
 
@@ -90,52 +90,6 @@ export default async function handler(req, res) {
             apiKey: process.env.OPENAI_API_KEY
         });
 
-        // プロンプトを作成（告知文）
-        const announcementPrompt = `あなたはウェビナー告知文を作成する専門家です。
-以下の情報を元に、プロフェッショナルで魅力的なウェビナー告知文を作成してください。
-
-【ウェビナータイトル】
-${title}
-
-【開催日時】
-${dateStr} ${timeStr}
-
-【開催形式】
-${formatLabel}
-
-【主催者】
-${organizerName}
-${organizerUrl ? `URL: ${organizerUrl}` : ''}
-
-【対象者】
-${targetAudience || '一般参加者'}
-
-【参加費】
-${fee || '無料'}
-
-【応募者URL】
-${registrationUrl}
-${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
-${speakersText}
-【内容】
-${content}
-
-【要件】
-- 記事の最初に「${organizerName}${organizerUrl ? `（${organizerUrl}）` : ''}は、」で始める
-- 以下のセクションを含める：
-  ■ 開催概要
-  ■ 内容
-  ■ 登壇者情報（登壇者がいる場合）
-  ■ 参加方法（応募者URLを明確に記載し、応募を促す）
-- ウェビナーの集客を促進するような魅力的な表現を使用
-- 参加者のメリットや価値を明確に伝える
-- 応募を促すCTA（Call to Action）を含める
-- 各セクションを充実させ、具体的で魅力的な内容にする
-- PR TIMESのフォーマットに最適化する
-- 文字数は800-1200文字程度
-
-ウェビナー告知文を作成してください：`;
-
         // プロンプトを作成（企画書）
         const planPrompt = `あなたはウェビナー企画書を作成する専門家です。
 以下の情報を元に、プロフェッショナルなウェビナー企画書を作成してください。
@@ -159,9 +113,10 @@ ${targetAudience || '一般参加者'}
 【参加費】
 ${fee || '無料'}
 
-【応募者URL】
+【セミナーに申し込むフォームのURL】
+${registrationFormUrl}
+【ウェビナー参加Zoom URL】
 ${registrationUrl}
-${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
 ${speakersText}
 【内容】
 ${content}
@@ -174,7 +129,7 @@ ${content}
   ■ 主催者
   ■ 対象者
   ■ 参加費
-  ■ 応募者URL
+  ■ セミナーに申し込むフォームのURL
   ■ 目的
   ■ 期待される成果
 - 各セクションを充実させ、具体的な内容にする
@@ -225,9 +180,8 @@ ${targetAudience || '一般参加者'}
 【参加費】
 ${fee || '無料'}
 
-【応募者URL】
-${registrationUrl}
-${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
+【セミナーに申し込むフォームのURL】
+${registrationFormUrl}
 ${speakersText}
 【内容】
 ${content}
@@ -235,7 +189,7 @@ ${content}
 【要件】
 - Twitter形式で魅力的に投稿文を作成
 - 応募を促すCTAを含める
-- 応募者URLを記載する
+- セミナーに申し込むフォームのURLを記載する
 - ${speakers && speakers.length > 0 ? '登壇者情報を含める' : ''}
 - ハッシュタグを含める
 - 絵文字を適切に使用
@@ -305,13 +259,14 @@ ${formatLabel}
 
 【主催者】
 ${organizerName}
-${registrationFormUrl ? `\n申込フォームURL: ${registrationFormUrl}` : ''}
+【ウェビナー参加Zoom URL】
+${registrationUrl}
 【要件】
 - 件名を含める（「【${title}】お申し込みありがとうございます」など）
 - 「お申し込みありがとうございます」から始める
 - 申し込みが完了したことを確認
 - 開催日時・形式を再確認
-- **重要**: 申し込みフォームURLを記載（登録内容の確認用など）
+- **重要**: ウェビナー参加Zoom URLを記載（申し込み後のみ見れるURL）
 - 開催前の案内やリマインドについても触れる
 - 丁寧で温かいトーン
 - 文字数は300-500文字程度
@@ -335,7 +290,7 @@ ${formatLabel}
 ${organizerName}
 ${organizerUrl ? `URL: ${organizerUrl}` : ''}
 ${speakersText}
-【応募者URL】
+【ウェビナー参加Zoom URL】
 ${registrationUrl}
 【内容】
 ${content}
@@ -345,7 +300,7 @@ ${content}
 - 開催が間近であることを伝える
 - 参加を楽しみにしていることを伝える
 - 開催日時・形式を再確認
-- 参加方法やアクセス情報を記載
+- **重要**: ウェビナー参加Zoom URLを記載（申し込み後のみ見れるURL）
 - 登壇者情報を含める（登壇者がいる場合）
 - 当日の流れや持ち物があれば記載
 - 丁寧で温かいトーン
@@ -376,8 +331,8 @@ ${targetAudience || '一般参加者'}
 【参加費】
 ${fee || '無料'}
 
-【応募者URL】
-${registrationUrl}
+【セミナーに申し込むフォームのURL】
+${registrationFormUrl}
 
 【ウェビナーの内容】
 ${content}
@@ -388,7 +343,7 @@ ${content}
 - 参加者への感謝を伝える
 - 登壇者情報を含める（登壇者がいる場合）
 - 社内メンバーに向けた告知文として作成
-- 応募者URLを記載
+- セミナーに申し込むフォームのURLを記載
 - ウェビナーの価値や成果を伝える
 - 文字数は400-600文字程度
 
@@ -424,22 +379,7 @@ ${surveyFormUrl ? `\n【アンケートフォーム入力URL】\n${surveyFormUrl
 
 
         // すべてのコンテンツを並列生成
-        const [announcementRes, planRes, checklistRes, snsRes, internalRes, marketingRes, thanksRes, reminderRes, thankyouRes] = await Promise.all([
-            openai.chat.completions.create({
-                model: 'gpt-4',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'あなたはウェビナー告知文を作成する専門家です。提供された情報から、プロフェッショナルで魅力的な告知文を作成してください。'
-                    },
-                    {
-                        role: 'user',
-                        content: announcementPrompt
-                    }
-                ],
-                temperature: 0.7 + (variation * 0.1),
-                max_tokens: 1500
-            }),
+        const [planRes, checklistRes, snsRes, internalRes, marketingRes, thanksRes, reminderRes, thankyouRes] = await Promise.all([
             openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -562,7 +502,6 @@ ${surveyFormUrl ? `\n【アンケートフォーム入力URL】\n${surveyFormUrl
             })
         ]);
 
-        const announcement = announcementRes.choices[0].message.content;
         const plan = planRes.choices[0].message.content;
         const checklist = checklistRes.choices[0].message.content;
         const sns = snsRes.choices[0].message.content;
@@ -573,7 +512,6 @@ ${surveyFormUrl ? `\n【アンケートフォーム入力URL】\n${surveyFormUrl
         const thankyou = thankyouRes.choices[0].message.content;
 
         res.json({
-            announcement,
             plan,
             checklist,
             sns,
