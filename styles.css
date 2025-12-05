@@ -46,6 +46,24 @@ body {
     gap: 12px;
 }
 
+.header-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.header-link:hover {
+    opacity: 0.8;
+}
+
+.header-link .header-text {
+    color: var(--text-primary);
+}
+
 .logo-icon {
     width: 40px;
     height: 40px;
