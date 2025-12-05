@@ -26,6 +26,7 @@ export default async function handler(req, res) {
             targetAudience, 
             fee, 
             content, 
+            speakers = [],
             variation = 0 
         } = req.body;
 
@@ -62,6 +63,25 @@ export default async function handler(req, res) {
             minute: '2-digit' 
         });
 
+        // 登壇者情報をフォーマット
+        let speakersText = '';
+        if (speakers && speakers.length > 0) {
+            speakersText = '\n【登壇者】\n';
+            speakers.forEach((speaker, index) => {
+                speakersText += `${index + 1}. ${speaker.name || ''}`;
+                if (speaker.position) {
+                    speakersText += `（${speaker.position}`;
+                    if (speaker.company) {
+                        speakersText += `・${speaker.company}`;
+                    }
+                    speakersText += '）';
+                } else if (speaker.company) {
+                    speakersText += `（${speaker.company}）`;
+                }
+                speakersText += '\n';
+            });
+        }
+
         // OpenAIクライアントの初期化
         const openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY
@@ -89,7 +109,7 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
-
+${speakersText}
 【内容】
 ${content}
 
@@ -127,7 +147,7 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
-
+${speakersText}
 【内容】
 ${content}
 
@@ -188,7 +208,7 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
-
+${speakersText}
 【内容】
 ${content}
 
@@ -222,7 +242,7 @@ ${targetAudience || '一般参加者'}
 
 【参加費】
 ${fee || '無料'}
-
+${speakersText}
 【内容】
 ${content}
 
@@ -240,8 +260,57 @@ ${content}
 
 参加者向け案内メールを作成してください：`;
 
+        // プロンプトを作成（お礼メール）
+        const thankyouPrompt = `あなたは参加者向けお礼メールを作成する専門家です。
+以下の情報を元に、丁寧で心のこもったお礼メールを作成してください。
+
+【ウェビナータイトル】
+${title}
+
+【開催日時】
+${dateStr} ${timeStr}
+
+【主催者】
+${organizerName}
+${organizerUrl ? `URL: ${organizerUrl}` : ''}
+${speakersText}
+【要件】
+- 件名を含める
+- 「ご視聴ありがとうございました」という感謝の言葉から始める
+- ウェビナーの内容に言及
+- 登壇者への感謝も含める（登壇者がいる場合）
+- 今後の連絡や次回開催の案内を含める
+- 丁寧で温かいトーン
+- 文字数は400-600文字程度
+
+参加者向けお礼メールを作成してください：`;
+
+        // プロンプトを作成（アンケート項目）
+        const surveyPrompt = `あなたはウェビナー後のアンケート項目を作成する専門家です。
+以下の情報を元に、効果的なアンケート項目を作成してください。
+
+【ウェビナータイトル】
+${title}
+
+【ウェビナーの内容】
+${content}
+${speakersText}
+【要件】
+- 以下のカテゴリを含める：
+  ■ 満足度に関する質問
+  ■ 内容に関する質問
+  ■ 登壇者に関する質問（登壇者がいる場合）
+  ■ 次回参加意向
+  ■ 自由記述欄
+- 各カテゴリに3-5個の質問項目を含める
+- 選択式と記述式のバランスを考慮
+- 回答しやすい形式にする
+- 文字数は500-800文字程度
+
+アンケート項目を作成してください：`;
+
         // すべてのコンテンツを並列生成
-        const [announcementRes, planRes, checklistRes, snsRes, emailRes] = await Promise.all([
+        const [announcementRes, planRes, checklistRes, snsRes, emailRes, thankyouRes, surveyRes] = await Promise.all([
             openai.chat.completions.create({
                 model: 'gpt-4',
                 messages: [
@@ -316,6 +385,36 @@ ${content}
                 ],
                 temperature: 0.7 + (variation * 0.1),
                 max_tokens: 800
+            }),
+            openai.chat.completions.create({
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'あなたは参加者向けお礼メールを作成する専門家です。提供された情報から、丁寧で心のこもったお礼メールを作成してください。'
+                    },
+                    {
+                        role: 'user',
+                        content: thankyouPrompt
+                    }
+                ],
+                temperature: 0.7 + (variation * 0.1),
+                max_tokens: 800
+            }),
+            openai.chat.completions.create({
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'あなたはウェビナー後のアンケート項目を作成する専門家です。提供された情報から、効果的なアンケート項目を作成してください。'
+                    },
+                    {
+                        role: 'user',
+                        content: surveyPrompt
+                    }
+                ],
+                temperature: 0.7 + (variation * 0.1),
+                max_tokens: 1000
             })
         ]);
 
@@ -324,13 +423,17 @@ ${content}
         const checklist = checklistRes.choices[0].message.content;
         const sns = snsRes.choices[0].message.content;
         const email = emailRes.choices[0].message.content;
+        const thankyou = thankyouRes.choices[0].message.content;
+        const survey = surveyRes.choices[0].message.content;
 
         res.json({
             announcement,
             plan,
             checklist,
             sns,
-            email
+            email,
+            thankyou,
+            survey
         });
 
     } catch (error) {

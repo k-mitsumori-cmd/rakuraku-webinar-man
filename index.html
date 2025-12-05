@@ -119,6 +119,35 @@
                     </div>
 
                     <div class="form-group">
+                        <label>
+                            登壇者情報
+                        </label>
+                        <div id="speakers-container">
+                            <div class="speaker-item">
+                                <div class="speaker-row">
+                                    <input 
+                                        type="text" 
+                                        class="speaker-name" 
+                                        placeholder="登壇者名"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        class="speaker-position" 
+                                        placeholder="役職（例: 代表取締役）"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        class="speaker-company" 
+                                        placeholder="会社名"
+                                    >
+                                    <button type="button" class="btn-remove-speaker" style="display: none;">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-speaker-btn" class="btn-secondary">+ 登壇者を追加</button>
+                    </div>
+
+                    <div class="form-group">
                         <label for="content">
                             ウェビナーの内容・目的 <span class="required">*</span>
                         </label>
@@ -143,7 +172,7 @@
                     <div class="progress-container">
                         <svg class="progress-ring" width="120" height="120">
                             <circle class="progress-ring-circle-bg" cx="60" cy="60" r="54" fill="transparent" stroke="#e0e0e0" stroke-width="8"/>
-                            <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="#1e3a8a" stroke-width="8" stroke-linecap="round"/>
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="var(--prtimes-blue)" stroke-width="8" stroke-linecap="round"/>
                         </svg>
                         <div class="progress-text">
                             <span class="progress-percent">0</span>%
@@ -159,7 +188,7 @@
                     <div class="progress-container">
                         <svg class="progress-ring" width="120" height="120">
                             <circle class="progress-ring-circle-bg" cx="60" cy="60" r="54" fill="transparent" stroke="#e0e0e0" stroke-width="8"/>
-                            <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="#1e3a8a" stroke-width="8" stroke-linecap="round"/>
+                            <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="var(--prtimes-blue)" stroke-width="8" stroke-linecap="round"/>
                         </svg>
                         <div class="progress-text">
                             <span class="progress-percent">0</span>%
@@ -182,6 +211,8 @@
                         <button class="tab-btn" data-tab="checklist">チェックリスト</button>
                         <button class="tab-btn" data-tab="sns">SNS投稿文</button>
                         <button class="tab-btn" data-tab="email">メール文面</button>
+                        <button class="tab-btn" data-tab="thankyou">お礼メール</button>
+                        <button class="tab-btn" data-tab="survey">アンケート項目</button>
                     </div>
 
                     <div id="tab-announcement" class="tab-content active">
@@ -222,6 +253,22 @@
                             <button class="copy-btn" data-copy="email">📋 コピー</button>
                         </div>
                         <div id="preview-email" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-thankyou" class="tab-content">
+                        <div class="tab-header">
+                            <h3>参加者向けお礼メール</h3>
+                            <button class="copy-btn" data-copy="thankyou">📋 コピー</button>
+                        </div>
+                        <div id="preview-thankyou" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-survey" class="tab-content">
+                        <div class="tab-header">
+                            <h3>アンケート項目</h3>
+                            <button class="copy-btn" data-copy="survey">📋 コピー</button>
+                        </div>
+                        <div id="preview-survey" class="article-body"></div>
                     </div>
                 </div>
 

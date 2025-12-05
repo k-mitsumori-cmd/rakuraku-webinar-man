@@ -65,11 +65,92 @@ const previewPlan = document.getElementById('preview-plan');
 const previewChecklist = document.getElementById('preview-checklist');
 const previewSns = document.getElementById('preview-sns');
 const previewEmail = document.getElementById('preview-email');
+const previewThankyou = document.getElementById('preview-thankyou');
+const previewSurvey = document.getElementById('preview-survey');
+
+// 登壇者情報管理
+const speakersContainer = document.getElementById('speakers-container');
+const addSpeakerBtn = document.getElementById('add-speaker-btn');
 
 // 文字数カウント
 contentTextarea.addEventListener('input', () => {
     contentLength.textContent = contentTextarea.value.length;
 });
+
+// 登壇者追加機能
+function addSpeakerItem(speakerData = { name: '', position: '', company: '' }) {
+    const speakerItem = document.createElement('div');
+    speakerItem.className = 'speaker-item';
+    speakerItem.innerHTML = `
+        <div class="speaker-row">
+            <input 
+                type="text" 
+                class="speaker-name" 
+                placeholder="登壇者名"
+                value="${speakerData.name || ''}"
+            >
+            <input 
+                type="text" 
+                class="speaker-position" 
+                placeholder="役職（例: 代表取締役）"
+                value="${speakerData.position || ''}"
+            >
+            <input 
+                type="text" 
+                class="speaker-company" 
+                placeholder="会社名"
+                value="${speakerData.company || ''}"
+            >
+            <button type="button" class="btn-remove-speaker">削除</button>
+        </div>
+    `;
+    
+    const removeBtn = speakerItem.querySelector('.btn-remove-speaker');
+    removeBtn.addEventListener('click', () => {
+        speakerItem.remove();
+        updateRemoveButtons();
+    });
+    
+    speakersContainer.appendChild(speakerItem);
+    updateRemoveButtons();
+}
+
+// 削除ボタンの表示/非表示を更新
+function updateRemoveButtons() {
+    const speakerItems = speakersContainer.querySelectorAll('.speaker-item');
+    speakerItems.forEach((item, index) => {
+        const removeBtn = item.querySelector('.btn-remove-speaker');
+        if (speakerItems.length > 1) {
+            removeBtn.style.display = 'block';
+        } else {
+            removeBtn.style.display = 'none';
+        }
+    });
+}
+
+// 登壇者情報を取得
+function getSpeakersData() {
+    const speakers = [];
+    const speakerItems = speakersContainer.querySelectorAll('.speaker-item');
+    speakerItems.forEach(item => {
+        const name = item.querySelector('.speaker-name').value.trim();
+        const position = item.querySelector('.speaker-position').value.trim();
+        const company = item.querySelector('.speaker-company').value.trim();
+        
+        if (name || position || company) {
+            speakers.push({ name, position, company });
+        }
+    });
+    return speakers;
+}
+
+// 登壇者追加ボタン
+addSpeakerBtn.addEventListener('click', () => {
+    addSpeakerItem();
+});
+
+// 初期化：削除ボタンの表示を更新
+updateRemoveButtons();
 
 // タブ切り替え機能
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -126,6 +207,16 @@ trySampleBtn.addEventListener('click', () => {
     feeInput.value = sampleData.fee || '';
     contentTextarea.value = sampleData.content;
     contentLength.textContent = sampleData.content.length;
+    
+    // 登壇者情報をクリアしてサンプルデータを追加
+    speakersContainer.innerHTML = '';
+    if (sampleData.speakers && sampleData.speakers.length > 0) {
+        sampleData.speakers.forEach(speaker => {
+            addSpeakerItem(speaker);
+        });
+    } else {
+        addSpeakerItem({ name: 'サンプル 太郎', position: '代表取締役', company: '株式会社サンプル' });
+    }
     
     titleInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     titleInput.focus();
@@ -195,7 +286,8 @@ async function generateWebinarTasks(variation = 0, isRegenerating = false) {
         organizerUrl: organizerUrlInput.value.trim(),
         targetAudience: targetAudienceInput.value.trim(),
         fee: feeInput.value.trim(),
-        content: contentTextarea.value.trim()
+        content: contentTextarea.value.trim(),
+        speakers: getSpeakersData()
     };
     
     if (!formData.title || !formData.content || !formData.organizerName || !formData.eventDate) {
@@ -453,6 +545,8 @@ function displayTasks(tasks) {
     previewChecklist.textContent = tasks.checklist || '';
     previewSns.textContent = tasks.sns || '';
     previewEmail.textContent = tasks.email || '';
+    previewThankyou.textContent = tasks.thankyou || '';
+    previewSurvey.textContent = tasks.survey || '';
     
     formSection.style.display = 'none';
     guideSection.style.display = 'none';
@@ -496,6 +590,10 @@ if (regenerateBtn) {
 resetBtn.addEventListener('click', () => {
     webinarForm.reset();
     contentLength.textContent = '0';
+    
+    // 登壇者情報をリセット
+    speakersContainer.innerHTML = '';
+    addSpeakerItem();
     
     formSection.style.display = 'block';
     guideSection.style.display = 'block';
