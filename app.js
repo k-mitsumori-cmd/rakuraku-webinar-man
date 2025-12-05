@@ -62,7 +62,9 @@ const registrationUrlInput = document.getElementById('registration-url');
 const registrationFormUrlInput = document.getElementById('registration-form-url');
 const surveyFormUrlInput = document.getElementById('survey-form-url');
 const targetAudienceInput = document.getElementById('target-audience');
-const feeInput = document.getElementById('fee');
+const feeTypeInputs = document.querySelectorAll('input[name="fee-type"]');
+const feeAmountGroup = document.getElementById('fee-amount-group');
+const feeAmountInput = document.getElementById('fee-amount');
 const contentTextarea = document.getElementById('content');
 const contentLength = document.getElementById('content-length');
 const generateBtn = document.getElementById('generate-btn');
@@ -88,6 +90,19 @@ const addSpeakerBtn = document.getElementById('add-speaker-btn');
 // 文字数カウント
 contentTextarea.addEventListener('input', () => {
     contentLength.textContent = contentTextarea.value.length;
+});
+
+// 参加費タイプ変更時の処理
+feeTypeInputs.forEach(input => {
+    input.addEventListener('change', () => {
+        if (input.value === 'paid') {
+            feeAmountGroup.style.display = 'block';
+            feeAmountInput.focus();
+        } else {
+            feeAmountGroup.style.display = 'none';
+            feeAmountInput.value = '';
+        }
+    });
 });
 
 // 登壇者追加機能
@@ -220,7 +235,18 @@ trySampleBtn.addEventListener('click', () => {
     registrationUrlInput.value = sampleData.registrationUrl || 'https://zoom.us/j/123456789';
     surveyFormUrlInput.value = sampleData.surveyFormUrl || '';
     targetAudienceInput.value = sampleData.targetAudience || '';
-    feeInput.value = sampleData.fee || '';
+    
+    // 参加費の設定
+    if (sampleData.fee && sampleData.fee !== '無料' && !sampleData.fee.includes('無料')) {
+        document.querySelector('input[name="fee-type"][value="paid"]').checked = true;
+        feeAmountGroup.style.display = 'block';
+        feeAmountInput.value = sampleData.fee;
+    } else {
+        document.querySelector('input[name="fee-type"][value="free"]').checked = true;
+        feeAmountGroup.style.display = 'none';
+        feeAmountInput.value = '';
+    }
+    
     contentTextarea.value = sampleData.content;
     contentLength.textContent = sampleData.content.length;
     
@@ -294,6 +320,10 @@ function startProgressAnimation(isRegenerating = false) {
 
 // ウェビナータスク生成（共通関数）
 async function generateWebinarTasks(variation = 0, isRegenerating = false) {
+    // 参加費を取得
+    const selectedFeeType = document.querySelector('input[name="fee-type"]:checked').value;
+    const fee = selectedFeeType === 'free' ? '無料' : feeAmountInput.value.trim() || '無料';
+    
     const formData = {
         title: titleInput.value.trim(),
         eventDate: eventDateInput.value,
@@ -304,7 +334,7 @@ async function generateWebinarTasks(variation = 0, isRegenerating = false) {
         registrationFormUrl: registrationFormUrlInput.value.trim(),
         surveyFormUrl: surveyFormUrlInput.value.trim(),
         targetAudience: targetAudienceInput.value.trim(),
-        fee: feeInput.value.trim(),
+        fee: fee,
         content: contentTextarea.value.trim(),
         speakers: getSpeakersData()
     };
