@@ -509,11 +509,11 @@ ${formData.registrationFormUrl || formData.registrationUrl}
 
 #ウェビナー #セミナー`,
 
-        internal: `【ウェビナー社内告知文】
+        internal: `【ウェビナー社内告知】
 
-ご視聴ありがとうございました。
+社内メンバーの皆様
 
-${formData.organizerName}${formData.organizerUrl ? `（${formData.organizerUrl}）` : ''}が開催したウェビナー「${formData.title}」が無事終了いたしました。
+この度、${formData.organizerName}${formData.organizerUrl ? `（${formData.organizerUrl}）` : ''}では、以下のウェビナーを開催いたします。
 
 【開催概要】
 ■ タイトル：${formData.title}
@@ -525,31 +525,29 @@ ${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
 【内容】
 ${formData.content}
 
-次回開催のご案内は、${formData.registrationFormUrl ? `以下のフォームからお申し込みください：\n${formData.registrationFormUrl}` : 'こちらから'}でお知らせいたします。`,
+【参加申し込み】
+${formData.registrationFormUrl ? `以下のフォームからお申し込みください：\n${formData.registrationFormUrl}` : 'お申し込みフォームをご利用ください'}
 
-        marketing: `件名：【${formData.title}】ウェビナー開催のご案内
+社内での共有・拡散にご協力をお願いいたします。`,
+
+        marketing: `件名：【${formData.title}】開催のご案内
 
 ${formData.organizerName}でございます。
 
-この度、下記のウェビナーを開催いたしますので、ご案内申し上げます。
+下記のウェビナーを開催いたします。
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【${formData.title}】
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-■ 開催日時：${dateStr} ${timeStr}
-■ 開催形式：${formatLabel}
-${formData.targetAudience ? `■ 対象者：${formData.targetAudience}` : ''}
-${formData.fee ? `■ 参加費：${formData.fee}` : '■ 参加費：無料'}
+開催日時：${dateStr} ${timeStr}
+開催形式：${formatLabel}
+${formData.targetAudience ? `対象者：${formData.targetAudience}` : ''}
+${formData.fee ? `参加費：${formData.fee}` : '参加費：無料'}
 
 【内容】
 ${formData.content}
 
-【参加方法】
-以下のフォームからお申し込みください：
+【お申し込み】
+以下のフォームからお申し込みください。
 ${formData.registrationFormUrl}
-
-皆様のご参加をお待ちしております。
 
 ${formData.organizerName}`,
 
@@ -593,12 +591,8 @@ ${formData.organizerName}`,
 
 ${formData.organizerName}でございます。
 
-本日は、ウェビナー「${formData.title}」にご参加いただき、誠にありがとうございました。
-
-おかげさまで、無事にウェビナーを終了することができました。
+本日は、ウェビナー「${formData.title}」にご参加いただき、ありがとうございました。
 ${formData.surveyFormUrl ? `\n次回のウェビナーをより良くするために、アンケートへのご協力をお願いいたします。\n\n【アンケートURL】\n${formData.surveyFormUrl}\n` : ''}
-
-今後ともよろしくお願いいたします。
 
 ${formData.organizerName}`
     };
