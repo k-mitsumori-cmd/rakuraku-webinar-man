@@ -312,6 +312,78 @@ body {
     margin-bottom: 24px;
 }
 
+/* タブ機能 */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--gray-border);
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--prtimes-blue);
+    background-color: var(--gray-light);
+}
+
+.tab-btn.active {
+    color: var(--prtimes-blue);
+    border-bottom-color: var(--prtimes-blue);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-border);
+}
+
+.tab-header h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--prtimes-dark);
+    margin: 0;
+}
+
+.copy-btn {
+    padding: 6px 16px;
+    background-color: var(--prtimes-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.copy-btn:hover {
+    background-color: var(--prtimes-blue-dark);
+}
+
 .article-header {
     border-left: 4px solid var(--prtimes-blue);
     padding-left: 16px;

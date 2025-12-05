@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プレスリリース ラクラク - AIでリリース記事を一瞬で作成</title>
+    <title>ウェビナー ラクラク - AIでウェビナータスクを自動生成</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,11 +12,11 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">PR</div>
+                    <div class="logo-icon">WB</div>
                 </div>
                 <div class="header-text">
-                    <h1>プレスリリース ラクラク</h1>
-                    <p>AIでリリース記事を一瞬で作成</p>
+                    <h1>ウェビナー ラクラク</h1>
+                    <p>AIでウェビナータスクを自動生成</p>
                 </div>
             </div>
         </div>
@@ -28,74 +28,105 @@
             <!-- 入力フォーム -->
             <div id="form-section" class="card">
                 <div class="form-header">
-                    <h2>記事情報を入力</h2>
+                    <h2>ウェビナー情報を入力</h2>
                     <button id="try-sample-btn" class="btn-secondary" type="button">🎯 お試しボタン</button>
                 </div>
 
-                <form id="article-form" class="article-form">
+                <form id="webinar-form" class="article-form">
                     <div class="form-group">
                         <label for="title">
-                            タイトル <span class="required">*</span>
+                            ウェビナータイトル <span class="required">*</span>
                         </label>
                         <input 
                             type="text" 
                             id="title" 
                             name="title" 
-                            placeholder="例: 新サービス「○○」をリリース"
+                            placeholder="例: AIを活用したマーケティング戦略セミナー"
                             required
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="purpose">
-                            目的 <span class="required">*</span>
+                        <label for="event-date">
+                            開催日時 <span class="required">*</span>
                         </label>
-                        <select id="purpose" name="purpose" required>
-                            <option value="company-announcement">会社の発表 - 新規事業、組織変更、経営方針などの会社発表</option>
-                            <option value="event-announcement">イベント告知 - セミナー、展示会、ウェビナーなどのイベント告知</option>
-                            <option value="tool-announcement">ツール発表 - 新サービス、アプリ、ソフトウェアのリリース</option>
-                            <option value="conversion">コンバージョン目的 - 商品・サービスの購入・登録を促進する記事</option>
-                            <option value="product-launch">製品リリース - 新製品の発売・リリース告知</option>
-                            <option value="partnership">パートナーシップ - 他社との提携・協業の発表</option>
-                            <option value="other">その他 - 上記以外の目的</option>
-                        </select>
-                        <p class="form-hint" id="purpose-hint"></p>
+                        <input 
+                            type="datetime-local" 
+                            id="event-date" 
+                            name="event-date" 
+                            required
+                        >
                     </div>
 
                     <div class="form-group">
-                        <label for="company-name">
-                            会社名 <span class="required">*</span>
+                        <label for="event-format">
+                            開催形式 <span class="required">*</span>
+                        </label>
+                        <select id="event-format" name="event-format" required>
+                            <option value="online">オンライン</option>
+                            <option value="offline">オフライン（会場）</option>
+                            <option value="hybrid">ハイブリッド（オンライン+オフライン）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="organizer-name">
+                            主催者名・会社名 <span class="required">*</span>
                         </label>
                         <input 
                             type="text" 
-                            id="company-name" 
-                            name="company-name" 
+                            id="organizer-name" 
+                            name="organizer-name" 
                             placeholder="例: 株式会社サンプル"
                             required
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="company-url">
-                            会社URL
+                        <label for="organizer-url">
+                            主催者URL
                         </label>
                         <input 
                             type="url" 
-                            id="company-url" 
-                            name="company-url" 
+                            id="organizer-url" 
+                            name="organizer-url" 
                             placeholder="例: https://example.com"
                         >
                     </div>
 
                     <div class="form-group">
+                        <label for="target-audience">
+                            対象者
+                        </label>
+                        <input 
+                            type="text" 
+                            id="target-audience" 
+                            name="target-audience" 
+                            placeholder="例: マーケティング担当者、経営者、起業家"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fee">
+                            参加費
+                        </label>
+                        <input 
+                            type="text" 
+                            id="fee" 
+                            name="fee" 
+                            placeholder="例: 無料、5,000円、10,000円（早期割引あり）"
+                        >
+                    </div>
+
+                    <div class="form-group">
                         <label for="content">
-                            内容 <span class="required">*</span>
+                            ウェビナーの内容・目的 <span class="required">*</span>
                         </label>
                         <textarea 
                             id="content" 
                             name="content" 
                             rows="8"
-                            placeholder="リリース記事の内容を簡潔に入力してください。詳細はAIが自動で補完します。&#10;&#10;例: 新サービス「○○」をリリースしました。ユーザーの作業効率を向上させるツールです。"
+                            placeholder="ウェビナーの内容や目的を簡潔に入力してください。詳細はAIが自動で補完します。&#10;&#10;例: AIを活用したマーケティング戦略について解説します。最新のデジタルマーケティング手法と実践的なノウハウをお伝えします。"
                             required
                         ></textarea>
                         <p class="form-hint">
@@ -104,7 +135,7 @@
                     </div>
 
                     <button type="submit" class="btn-primary" id="generate-btn">
-                        ✨ 記事を生成する
+                        ✨ タスクを生成する
                     </button>
                 </form>
 
@@ -118,7 +149,7 @@
                             <span class="progress-percent">0</span>%
                         </div>
                     </div>
-                    <p class="loading-message">記事を生成中...</p>
+                    <p class="loading-message">タスクを生成中...</p>
                 </div>
             </div>
 
@@ -137,28 +168,65 @@
                     <p class="loading-message">現在再生成しています...</p>
                 </div>
                 <div class="preview-header">
-                    <h2>生成された記事</h2>
+                    <h2>生成されたタスク</h2>
                     <div class="preview-actions">
                         <button id="regenerate-btn" class="btn-secondary">🔄 再生成</button>
-                        <button id="copy-btn" class="btn-secondary">📋 コピー</button>
                         <button id="reset-btn" class="btn-secondary">🔄 新規作成</button>
                     </div>
                 </div>
 
                 <div class="article-preview">
-                    <div class="article-header">
-                        <h3 id="preview-title"></h3>
-                        <p id="preview-summary" class="article-summary"></p>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="announcement">告知文</button>
+                        <button class="tab-btn" data-tab="plan">企画書</button>
+                        <button class="tab-btn" data-tab="checklist">チェックリスト</button>
+                        <button class="tab-btn" data-tab="sns">SNS投稿文</button>
+                        <button class="tab-btn" data-tab="email">メール文面</button>
                     </div>
-                    <div id="preview-body" class="article-body"></div>
-                    <div id="preview-keywords" class="article-keywords" style="display: none;">
-                        <p class="keywords-label">キーワード:</p>
-                        <div class="keywords-list"></div>
+
+                    <div id="tab-announcement" class="tab-content active">
+                        <div class="tab-header">
+                            <h3>ウェビナー告知文</h3>
+                            <button class="copy-btn" data-copy="announcement">📋 コピー</button>
+                        </div>
+                        <div id="preview-announcement" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-plan" class="tab-content">
+                        <div class="tab-header">
+                            <h3>企画書・概要資料</h3>
+                            <button class="copy-btn" data-copy="plan">📋 コピー</button>
+                        </div>
+                        <div id="preview-plan" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-checklist" class="tab-content">
+                        <div class="tab-header">
+                            <h3>運営チェックリスト</h3>
+                            <button class="copy-btn" data-copy="checklist">📋 コピー</button>
+                        </div>
+                        <div id="preview-checklist" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-sns" class="tab-content">
+                        <div class="tab-header">
+                            <h3>SNS投稿文</h3>
+                            <button class="copy-btn" data-copy="sns">📋 コピー</button>
+                        </div>
+                        <div id="preview-sns" class="article-body"></div>
+                    </div>
+
+                    <div id="tab-email" class="tab-content">
+                        <div class="tab-header">
+                            <h3>参加者向け案内メール</h3>
+                            <button class="copy-btn" data-copy="email">📋 コピー</button>
+                        </div>
+                        <div id="preview-email" class="article-body"></div>
                     </div>
                 </div>
 
                 <div class="info-box">
-                    <p>💡 <strong>次のステップ:</strong> 生成された記事をコピーして、PR TIMESの投稿画面に貼り付けてください。必要に応じて、内容を調整してから投稿してください。「再生成」ボタンで、異なるニュアンスの記事を生成することもできます。</p>
+                    <p>💡 <strong>次のステップ:</strong> 生成されたコンテンツをコピーして使用してください。各タブを切り替えて、告知文、企画書、チェックリスト、SNS投稿文、メール文面を確認できます。「再生成」ボタンで、異なるニュアンスのコンテンツを生成することもできます。</p>
                 </div>
             </div>
 
@@ -167,10 +235,11 @@
                 <h3>📖 使い方</h3>
                 <ol class="guide-list">
                     <li>「お試しボタン」をクリックして、サンプルデータで動作を確認できます</li>
-                    <li>タイトル、目的、会社名、内容を入力してください（内容は簡潔でOK！）</li>
-                    <li>「記事を生成する」ボタンをクリックすると、AIが詳細なプレスリリースを作成します</li>
-                    <li>生成された記事をコピーして、PR TIMESに投稿してください</li>
-                    <li>「再生成」ボタンで、異なるニュアンスの記事を生成できます</li>
+                    <li>ウェビナーの基本情報（タイトル、日時、形式、主催者、内容など）を入力してください（内容は簡潔でOK！）</li>
+                    <li>「タスクを生成する」ボタンをクリックすると、AIが告知文、企画書、チェックリスト、SNS投稿文、メール文面を自動生成します</li>
+                    <li>各タブを切り替えて、生成されたコンテンツを確認してください</li>
+                    <li>各コンテンツの「コピー」ボタンで、内容を簡単にコピーできます</li>
+                    <li>「再生成」ボタンで、異なるニュアンスのコンテンツを生成できます</li>
                 </ol>
             </div>
         </div>
@@ -179,7 +248,7 @@
     <!-- フッター -->
     <footer class="footer">
         <div class="container">
-            <p>プレスリリース ラクラク - AIでリリース記事を簡単作成</p>
+            <p>ウェビナー ラクラク - AIでウェビナータスクを自動生成</p>
         </div>
     </footer>
 
